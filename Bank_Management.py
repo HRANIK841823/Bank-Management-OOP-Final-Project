@@ -35,7 +35,7 @@ class User(ABC):
         print(f"Your Account New Balance is {self.balance}")
 
     def withdraw_balance(self, amount):
-        if amount>=bank.balance:
+        if bank.balance==0:
             print("Bank is Bankrupt")
         elif amount<=bank.balance and amount <= self.balance:   
                 bank.balance-=amount        
