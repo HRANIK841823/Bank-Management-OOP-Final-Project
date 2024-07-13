@@ -28,14 +28,21 @@ class User(ABC):
         print(f"\n\n{self.name}, Your Account Balance is {self.balance}")
 
     def deposit_balance(self, amount):
-        bank.balance+=amount
-        self.balance += amount
-        self.transaction_history.append(f"Deposited {amount}")
-        print(f"\n\n{amount} is deposited in Your Account")
-        print(f"Your Account New Balance is {self.balance}")
+        if amount<1:
+            print("\nPlease Enter valid Amount")
+            print("Negative amount is not excepted")
+        else:
+           bank.balance+=amount
+           self.balance += amount
+           self.transaction_history.append(f"Deposited {amount}")
+           print(f"\n\n{amount} is deposited in Your Account")
+           print(f"Your Account New Balance is {self.balance}")
 
     def withdraw_balance(self, amount):
-        if bank.balance==0:
+        if amount<1:
+            print("\nPlease Enter valid Amount")
+            print("Negative amount is not excepted")
+        elif bank.balance==0:
             print("Bank is Bankrupt")
         elif amount<=bank.balance and amount <= self.balance:   
                 bank.balance-=amount        
@@ -54,36 +61,47 @@ class User(ABC):
             print(transaction)
 
     def take_loan(self, amount):
-        bank.exist_balance_in_bank=bank.balance-self.balance
-        if self.loan_count < 2:
-            if amount<=bank.exist_balance_in_bank:
-               bank.balance-=amount
-               self.balance += amount
-               self.loan_count += 1
-               self.transaction_history.append(f"Loan taken from bank ---> {amount}")
-               print(f"\n\nLoan of {amount} is granted and added to Your Account")
-               print(f"{self.name} your Account Balance is : {self.balance}")
-            else:
-                print("Bank Doesnot Have Enough Amount")
+        if amount<1:
+            print("\nPlease Enter valid Amount")
+            print("Negative amount is not excepted")
+        elif bank.loan==False:
+            print("Loan Feature is OFF")
         else:
-            print("Loan limit exceeded")
+            bank.exist_balance_in_bank=bank.balance-self.balance
+            if self.loan_count < 2:
+                if amount<=bank.exist_balance_in_bank:
+                    bank.total_loan_amount+=amount
+                    bank.balance-=amount
+                    self.balance += amount
+                    self.loan_count += 1
+                    self.transaction_history.append(f"Loan taken from bank ---> {amount}")
+                    print(f"\n\nLoan of {amount} is granted and added to Your Account")
+                    print(f"{self.name} your Account Balance is : {self.balance}")
+                else:
+                    print("Bank Doesnot Have Enough Amount")
+            else:
+                print("Loan limit exceeded")
             
 
     def transfer_amount(self, target_account_num, amount):
-         target_account = next((account for account in User.Bank_account.values() if account.account_number == target_account_num), None)
-         if target_account:
-            if amount <= self.balance:
-               self.balance -= amount
-               target_account.balance += amount
-               self.transaction_history.append(f"Transferred {amount} to {target_account.name}")
-               target_account.transaction_history.append(f"Received {amount} from {self.name}")
-               print(f"{amount} is transferred to {target_account.name}")
+        if amount<1:
+            print("\nPlease Enter valid Amount")
+            print("Negative amount is not excepted")
+        else:
+            target_account = next((account for account in User.Bank_account.values() if account.account_number == target_account_num), None)
+            if target_account:
+                if amount <= self.balance:
+                    self.balance -= amount
+                    target_account.balance += amount
+                    self.transaction_history.append(f"Transferred {amount} to {target_account.name}")
+                    target_account.transaction_history.append(f"Received {amount} from {self.name}")
+                    print(f"{amount} is transferred to {target_account.name}")
+                else:
+                    print("Amount exceeded!!!!")
+                    print(f"Your Account Balance is {self.balance}")
+                    print("Please Enter Valid Amount")
             else:
-               print("Amount exceeded!!!!")
-               print(f"Your Account Balance is {self.balance}")
-               print("Please Enter Valid Amount")
-         else:
-            print("Account does not exist")
+                print("Account does not exist")
 
 
 class Bank(ABC):
@@ -95,7 +113,7 @@ class Bank(ABC):
         self.exist_balance_in_bank=0
         self.accounts = []
         self.total_loan_amount = 0
-        self.loan = True
+        self.loan = 0
 
     def create_an_account(self, user):
         self.accounts.append(user)
@@ -132,9 +150,15 @@ class Bank(ABC):
         print(f"Total loan amount: {total_loan_amount}")
 
     def loan_on_off(self):
-        self.loan = not self.loan
-        status = "on" if self.loan else "off"
-        print(f"Loan feature is now {status}")
+        print("\n\nEnter ON for Start Loan Feature")
+        print("Enter OFF for Stop Loan Feature")
+        pochondo=input("Enter Your Choice: ")
+        self.loan =pochondo
+        if self.loan.lower()=="on":
+            self.loan =True
+        else:
+            self.loan=False
+        print(f"Loan feature is now {self.loan}")
 
 class Admin:
     def __init__(self, name, email, phone) -> None:
@@ -267,5 +291,3 @@ while True:
         break
     else:
         print("Invalid Input")
-
-    
